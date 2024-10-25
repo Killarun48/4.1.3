@@ -1,0 +1,211 @@
+basePath: /
+definitions:
+  controller.RequestAddressGeocode:
+    properties:
+      lat:
+        example: "59.923013"
+        type: string
+      lng:
+        example: "30.318105"
+        type: string
+    type: object
+  controller.RequestAddressSearch:
+    properties:
+      query:
+        example: Московский проспект 14
+        type: string
+    type: object
+  controller.ResponseAddress:
+    properties:
+      addresses:
+        items:
+          $ref: '#/definitions/models.Address'
+        type: array
+    type: object
+  main.RequestRegisterLogin:
+    properties:
+      login:
+        example: flip
+        type: string
+      password:
+        example: flop
+        type: string
+    type: object
+  main.ResponseLogin:
+    properties:
+      token:
+        example: qpJhbGciOiJIUzI1NiIsInR5cCI6IlkXVCJ9.kaJsb2dpbiI6ImZsaXAifQ.N2Ycrfyww7I46L51y0MlofV2ef2iBVfsZaQ6J8EgOfk
+        type: string
+    type: object
+  main.ResponseRegister:
+    properties:
+      id:
+        example: "999"
+        type: string
+    type: object
+  main.errorResponse:
+    properties:
+      message:
+        example: no token found
+        type: string
+    type: object
+  models.Address:
+    properties:
+      city:
+        example: Санкт-Петербург
+        type: string
+      house:
+        example: "14"
+        type: string
+      lat:
+        example: "59.923013"
+        type: string
+      lon:
+        example: "30.318105"
+        type: string
+      street:
+        example: Московский
+        type: string
+    type: object
+  responder.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Поиск информации по адресу или координатам.
+  title: ГеоAPI
+  version: "1.0"
+paths:
+  /api/address/geocode:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Координаты. lat - Географическая широта. lng - Географическая
+          долгота.
+        in: body
+        name: lat,lng
+        required: true
+        schema:
+          $ref: '#/definitions/controller.RequestAddressGeocode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ResponseAddress'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/responder.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Обратное геокодирование (адрес по координатам)
+      tags:
+      - api
+  /api/address/search:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Адрес
+        in: body
+        name: query
+        required: true
+        schema:
+          $ref: '#/definitions/controller.RequestAddressSearch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.ResponseAddress'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/responder.Response'
+      security:
+      - ApiKeyAuth: []
+      summary: Геокодирование (координаты по адресу)
+      tags:
+      - api
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Учетные данные
+        in: body
+        name: login,password
+        required: true
+        schema:
+          $ref: '#/definitions/main.RequestRegisterLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ResponseLogin'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.errorResponse'
+      summary: Авторизация пользователя
+      tags:
+      - api
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Учетные данные
+        in: body
+        name: login,password
+        required: true
+        schema:
+          $ref: '#/definitions/main.RequestRegisterLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.ResponseRegister'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/main.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/main.errorResponse'
+      summary: Регистрация пользователя
+      tags:
+      - api
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
